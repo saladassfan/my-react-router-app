@@ -693,6 +693,47 @@ type PersonKey = keyof typeof peopleData;
 
 export function Welcome() {
   const [selectedPerson, setSelectedPerson] = useState<PersonKey | null>(null);
+  const [openHardware, setOpenHardware] = useState<Record<string, boolean>>({});
+  const hardwareItems = [
+    'KY-018 Photoresistor',
+    'KY-038 Microphone sensor',
+    'LED',
+    'KY-012 Buzzer',
+    'Arduino board'
+  ];
+  const hardwareDescriptions: Record<string, React.ReactNode> = {
+    'KY-018 Photoresistor': (
+      <p className="leading-7">
+        It uses a Light Dependent Resistor (LDR). When light shines on it, its electrical resistance decreases; when it is dark, its resistance increases.
+      </p>
+    ),
+    'KY-038 Microphone sensor': (
+      <p className="leading-7">
+        It features a small microphone that captures sound and an onboard potentiometer to adjust its sensitivity. It usually provides a digital output (triggering high/low when a sound exceeds a certain threshold) and sometimes an analog output (measuring the actual volume level).
+      </p>
+    ),
+    'LED': (
+      <p className="leading-7">
+        A semiconductor light source that emits light when an electric current flows through it.
+      </p>
+    ),
+    'KY-012 Buzzer': (
+      <p className="leading-7">
+        It has its own internal oscillator. As soon as you apply direct current (DC) power to it, it automatically creates a sound without needing a complex audio signal from your code.
+      </p>
+    ),
+    'Arduino board': (
+      <p className="leading-7">
+        <strong>Arduino</strong> is an open-source electronics platform based on easy-to-use hardware and software. It consists of a physical, programmable circuit board (often called a microcontroller) and a piece of software (IDE) used to write and upload code to the board. Designed for hobbyists, artists, and designers, it allows users to create interactive projects by reading inputs—such as a finger on a button, light on a sensor, or a Twitter message—and turning them into outputs, like activating a motor, turning on an LED, or publishing something online.
+      </p>
+    )
+  };
+  const toggleHardware = (key: string) => {
+    setOpenHardware(prev => {
+      const isOpen = !!prev[key];
+      return isOpen ? {} : { [key]: true };
+    });
+  };
   const closeModal = () => setSelectedPerson(null);
 
   return (
@@ -715,12 +756,12 @@ export function Welcome() {
       <div className="relative z-10 w-full">
 
       {/* Navigation Member Buttons */}
-      <nav className="mx-auto flex flex-wrap gap-4 justify-center w-full max-w-lg">
+      <nav className="mx-auto flex flex-wrap gap-4 justify-center w-full max-w-4xl">
         {(Object.keys(peopleData) as PersonKey[]).map((key) => (
           <button 
             key={key}
             onClick={() => setSelectedPerson(key)}
-            className="px-5 py-2 bg-black text-white font-medium rounded-lg transition-colors shadow-sm capitalize border border-transparent animated-border-cycle"
+            className="px-7 py-3 text-lg bg-black text-white font-semibold rounded-2xl transition-colors shadow-lg capitalize border border-transparent animated-border-cycle"
           >
             {key}
           </button>
@@ -728,28 +769,95 @@ export function Welcome() {
       </nav>
 
       <header className="mt-4">
-        <h1 className="text-4xl font-bold tracking-tight text-white">
+        <h1 className="text-6xl font-bold tracking-tight text-white">
           Welcome to Our Web Page
         </h1>
-        <p className="text-white/70 mt-2 max-w-md mx-auto">
+        <p className="text-white/70 text-lg mt-3 max-w-2xl mx-auto">
           Click on any team member's button at the top to discover their profile!
         </p>
-        <section className="mt-6 max-w-lg mx-auto bg-white/5 border border-white/10 rounded-3xl p-5 text-left shadow-lg">
-          <h2 className="text-2xl font-semibold text-white mb-3">
+        <section className="mt-6 max-w-3xl mx-auto bg-white/5 border border-white/10 rounded-3xl p-8 text-left shadow-lg animated-border-cycle">
+          <h2 className="text-4xl font-semibold text-white mb-5">
             Our embedded system
           </h2>
-          <p className="text-white/70 leading-7">
+          <p className="text-white/70 text-lg leading-8">
             This project is an embedded smart home system that combines a light sensor and a sound sensor to automate lighting and security functions. Depending on the room brightness and detected sound, the system either turns on a white LED for illumination or activates a red LED and buzzer alarm for security purposes.
           </p>
         </section>
+
+        <section className="mt-6 max-w-3xl mx-auto bg-white/5 border border-white/10 rounded-3xl p-8 text-left shadow-lg animated-border-cycle">
+          <h2 className="text-4xl font-semibold text-white mb-5">
+            How it works?
+          </h2>
+          <div className="text-white/70 text-lg leading-8 space-y-5">
+            <p>
+              If the room is dark and the microphone detects a clap or loud sound, the system turns on a white LED for a few seconds. This simulates an automatic smart light that helps someone see in the dark.
+            </p>
+            <p>
+              If the room is bright and a clap/loud sound is detected, the system activates an alarm mode:
+            </p>
+            <ul className="list-disc ml-6 text-white/70 text-lg space-y-2">
+              <li>The red LED turns on</li>
+              <li>The buzzer produces a siren sound for about 3 seconds</li>
+              <li>This works like a simple intruder or warning alarm system.</li>
+            </ul>
+          </div>
+        </section>
       </header>
+
+      <div className="mt-6 max-w-3xl mx-auto text-left">
+        <h3 className="text-2xl font-semibold text-white mb-3">Main Components</h3>
+      </div>
+
+      <section className="mt-2 max-w-3xl mx-auto grid grid-cols-1 gap-4 text-left">
+        {hardwareItems.map((item) => (
+          <div key={item} className="bg-white/5 border border-white/10 rounded-2xl p-6 animated-border-cycle">
+            <button
+              onClick={() => toggleHardware(item)}
+              className="w-full text-left flex items-center justify-between gap-4 py-2"
+            >
+              <span className="text-white text-lg font-semibold">{item}</span>
+              <span className="text-white/70 text-xl">{openHardware[item] ? '−' : '+'}</span>
+            </button>
+            {openHardware[item] && (
+              <div className="mt-4 text-white/70 text-lg leading-8">
+                {hardwareDescriptions[item] ?? <div>this is a test</div>}
+              </div>
+            )}
+          </div>
+        ))}
+      </section>
+
+      <section className="mt-6 max-w-3xl mx-auto text-left">
+        <h3 className="text-2xl font-semibold text-white mb-4">Smart home applications:</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-5 animated-border-cycle">
+            <h4 className="text-2xl font-semibold text-white">Automatic lighting system</h4>
+            <p className="text-white/70 text-lg mt-3">Turns on lights when needed in dark environments.</p>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-5 animated-border-cycle">
+            <h4 className="text-2xl font-semibold text-white">Security system</h4>
+            <p className="text-white/70 text-lg mt-3">Detects suspicious sounds and activates an alarm.</p>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-5 animated-border-cycle">
+            <h4 className="text-2xl font-semibold text-white">Energy saving</h4>
+            <p className="text-white/70 text-lg mt-3">Lights only activate under specific conditions instead of staying on all the time.</p>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-5 animated-border-cycle">
+            <h4 className="text-2xl font-semibold text-white">Noise-triggered automation</h4>
+            <p className="text-white/70 text-lg mt-3">Uses sound commands (like claps) to control devices without touching switches.</p>
+          </div>
+        </div>
+      </section>
 
       {/* POP-UP MODAL ENGINE */}
       {selectedPerson && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           
           {/* Dynamic Card Container changing styles based on active background overlay modules */}
-          <div className={`rounded-2xl shadow-2xl max-w-md w-full p-6 text-center relative max-h-[90vh] overflow-y-auto transition-all duration-300 border overflow-hidden
+          <div className={`rounded-2xl shadow-2xl max-w-md w-full p-6 text-center relative max-h-[90vh] overflow-y-auto transition-all duration-300 border overflow-hidden animated-border-cycle
             ${selectedPerson === 'luis' 
               ? 'bg-transparent text-white border-white/10 shadow-[0_0_50px_rgba(222,68,59,0.3)]' 
               : selectedPerson === 'laila'
@@ -870,7 +978,7 @@ export function Welcome() {
 
             {/* Favorite Embedded Video Layer (Specific to Luis) */}
             {'video' in peopleData[selectedPerson] && (peopleData[selectedPerson] as any).video && (
-              <section className={`mb-6 p-3 rounded-xl text-left border z-10 relative 
+              <section className={`mb-6 p-3 rounded-xl text-left border z-10 relative animated-border-cycle 
                 ${selectedPerson === 'luis' 
                   ? 'bg-black/40 border-white/10' 
                   : 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800'
@@ -917,7 +1025,7 @@ export function Welcome() {
               onClick={closeModal}
               className={`mt-2 w-full py-2 font-medium rounded-lg transition-colors text-sm z-10 relative
                 ${(selectedPerson === 'luis' || selectedPerson === 'laila' || selectedPerson === 'adrian') 
-                  ? 'bg-white/10 hover:bg-white/20 text-white border border-white/20' 
+                  ? 'bg-white/10 hover:bg-white/20 text-white border border-white/20 animated-border-cycle' 
                   : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-white'
                 }`}
             >
